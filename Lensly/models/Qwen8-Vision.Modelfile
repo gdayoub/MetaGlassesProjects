@@ -1,0 +1,15 @@
+# Portable recipe for the vision model used by Lensly on the owner's laptop.
+# First pull the upstream model, then create the local alias; see START-HERE.md.
+# This inherits the matching vision projector from the upstream Ollama import.
+FROM hf.co/prithivMLmods/Qwen3-VL-8B-Instruct-abliterated-v2-GGUF:Q4_K_M
+
+TEMPLATE """{{ if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ .Response }}<|im_end|>
+"""
+PARAMETER stop <|im_start|>
+PARAMETER stop <|im_end|>
+PARAMETER stop <|im_start|>user

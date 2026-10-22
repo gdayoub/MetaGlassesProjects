@@ -1,0 +1,3 @@
+FROM hf.co/mlabonne/gemma-3-27b-it-abliterated-GGUF:Q4_K_M
+PARAMETER num_ctx 4096
+PARAMETER num_predict -1

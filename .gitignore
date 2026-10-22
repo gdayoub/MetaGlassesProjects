@@ -1,0 +1,16 @@
+/.project-guide.md
+**/.project-guide.md
+.env
+.env.*
+!.env.example
+.venv/
+node_modules/
+__pycache__/
+*.py[cod]
+data/
+work/
+dist/
+dist-vercel/
+.vercel/
+test-results/
+playwright-report/

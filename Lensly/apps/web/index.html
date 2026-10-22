@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="application-name" content="Lensly" />
+    <meta name="mrbd-web-app-capable" content="yes" />
+    <meta
+      name="description"
+      content="Lensly. A little curiosity, a clearer picture. Your personal text and image assistant."
+    />
+    <title>Lensly</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/boot.js" defer></script>
+    <script type="module" src="/main.js"></script>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <span class="brand">Lensly<span class="brand-signal" aria-hidden="true"></span></span>
+      </header>
+      <section id="connect-view" aria-labelledby="connect-title">
+        <p class="eyebrow">YOUR WORLD. A LITTLE CLEARER.</p>
+        <h1 id="connect-title">Let's connect.</h1>
+        <p class="muted">Create a pairing code in Settings on your laptop. Enter it here.</p>
+        <form id="pair-form" class="stack">
+          <label for="pair-code">One-time code from Settings</label>
+          <input
+            id="pair-code"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            maxlength="8"
+            pattern="[0-9]{8}"
+            placeholder="8-digit code"
+            required
+          />
+          <label class="remember-choice" for="remember-device">
+            <input id="remember-device" type="checkbox" checked />
+            <span>Remember this device <small>Stay signed in for up to 7 days.</small></span>
+          </label>
+          <button class="primary" type="submit">Pair this device</button>
+        </form>
+        <p class="fine">
+          Write or dictate the eight digits. The code works once and expires in five minutes.
+        </p>
+        <details id="admin-login" class="token-help">
+          <summary>Laptop administrator login</summary>
+          <form id="connect-form" class="stack">
+            <label for="token"
+              >Server access token<small>Use this on your laptop, not your glasses.</small></label
+            >
+            <input
+              id="token"
+              type="password"
+              autocomplete="off"
+              placeholder="Paste your access token"
+              required
+            />
+            <button type="submit">Connect</button>
+          </form>
+          <p class="fine">
+            Open Desktop\LensAgent\.env and copy the value after LENSAGENT_API_TOKEN=. Keep it
+            private.
+          </p>
+        </details>
+        <p id="startup-status" class="fine" role="status">Loading controls…</p>
+        <noscript
+          ><p class="error">
+            JavaScript is unavailable. Open Lensly as a Web App in Meta AI and reload.
+          </p></noscript
+        >
+      </section>
+      <div id="workspace" hidden>
+        <nav class="tabs" aria-label="Workspace">
+          <button data-view="chat" aria-current="page">Ask</button
+          ><button data-view="images">Images</button><button data-view="history">History</button
+          ><button data-view="settings">Settings</button>
+        </nav>
+        <section id="confirm-panel" class="confirmation" aria-label="Confirm action" hidden>
+          <p id="confirm-message"></p>
+          <div class="image-actions">
+            <button id="confirm-action">Confirm</button><button id="cancel-action">Cancel</button>
+          </div>
+        </section>
+        <section id="chat-view" class="view" aria-label="Conversation">
+          <div class="conversation-heading">
+            <span id="conversation-title">New conversation</span
+            ><button id="new-conversation" class="compact" aria-label="New conversation">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg> New
+              chat
+            </button>
+          </div>
+          <div
+            id="messages"
+            class="messages"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions text"
+            tabindex="0"
+          ></div>
+          <form id="message-form" class="composer">
+            <div id="attachment-preview" class="attachment-preview" hidden>
+              <img id="attachment-image" alt="Attached image" hidden />
+              <div>
+                <span id="attachment-title">Image attached</span
+                ><small>Included with your question</small>
+              </div>
+              <button id="clear-context" class="icon-button" type="button" aria-label="Clear image">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" /></svg>
+              </button>
+            </div>
+            <span id="context-label" class="sr-only">Text only · no image sent</span>
+            <label class="sr-only" for="question">Your question</label
+            ><textarea
+              id="question"
+              rows="2"
+              maxlength="8000"
+              placeholder="Ask Lensly anything…"
+              required
+            ></textarea>
+            <div class="composer-actions">
+              <div class="attachment-control">
+                <button
+                  id="add-image"
+                  class="icon-button"
+                  type="button"
+                  aria-label="Add image"
+                  aria-expanded="false"
+                  aria-controls="attachment-menu"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                </button>
+                <div
+                  id="attachment-menu"
+                  class="attachment-menu"
+                  role="group"
+                  aria-label="Image attachments"
+                  hidden
+                >
+                  <p class="eyebrow">ADD A LITTLE CONTEXT</p>
+                  <button id="upload-image" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="4" />
+                      <path d="m3 16 5-5 4 4 3-3 6 6M16 7h.01" />
+                    </svg>
+                    Upload image <span>From this device</span>
+                  </button>
+                  <button id="saved-images" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="7" y="7" width="14" height="14" rx="3" />
+                      <path d="M17 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2" />
+                    </svg>
+                    Saved images <span>In this chat</span>
+                  </button>
+                  <p class="fine">
+                    On glasses? Add a photo from your phone to this chat, then choose Saved images.
+                  </p>
+                </div>
+              </div>
+              <label class="sr-only" for="provider">AI provider</label
+              ><select id="provider" aria-label="AI provider"></select>
+              <button id="send" class="send-button" type="submit" aria-label="Ask →">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6" /></svg>
+              </button>
+            </div>
+          </form>
+          <p class="composer-hint">A question. A picture. A new perspective.</p>
+          <button id="new-attempt" class="compact" hidden>Retry as a new request</button>
+        </section>
+        <section id="images-view" class="view" aria-labelledby="images-title" hidden>
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">A CLOSER LOOK</p>
+              <h2 id="images-title">Images in this chat</h2>
+            </div>
+            <button id="refresh-images" class="compact">Refresh</button>
+          </div>
+          <p class="muted">Choose a picture to bring into the conversation.</p>
+          <button id="upload-library" class="upload" type="button">
+            ＋ Upload image <span>JPEG, PNG or WebP</span>
+          </button>
+          <p class="fine">
+            Using your glasses? Open this chat from History on your phone, upload a photo, then
+            Refresh here. Glasses camera capture isn't connected yet.
+          </p>
+          <div id="image-list" class="image-list"></div>
+        </section>
+        <section id="history-view" class="view" aria-labelledby="history-title" hidden>
+          <p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p>
+          <h2 id="history-title">Your conversations</h2>
+          <div id="history-list" class="stack"></div>
+        </section>
+        <section id="settings-view" class="view" aria-labelledby="settings-title" hidden>
+          <h2 id="settings-title">Your connection</h2>
+          <p id="connection" class="connection-state">PAIR DEVICE</p>
+          <p id="remembered-status" class="fine"></p>
+          <p class="fine">
+            Set up Gemini with an API key from
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer"
+              >Google AI Studio ↗</a
+            >. Save it in your server’s .env file, then restart the server.
+          </p>
+          <div id="provider-status" class="stack"></div>
+          <p id="retention" class="fine"></p>
+          <p class="fine">
+            On glasses, select the question field to write or dictate with Meta’s text composer.
+          </p>
+          <button id="create-pairing">Create glasses pairing code</button>
+          <p id="pairing-result" role="status"></p>
+          <button id="revoke-devices">Revoke paired devices</button
+          ><button id="disconnect">Disconnect this browser</button>
+        </section>
+      </div>
+      <input id="image-file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </main>
+  </body>
+</html>
