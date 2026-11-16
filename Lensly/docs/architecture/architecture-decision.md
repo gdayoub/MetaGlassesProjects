@@ -1,6 +1,6 @@
 # Architecture decision
 
-Decision date: 2026-10-22. Implement a local web client and provider-independent Python backend. Target the documented Ray-Ban Display web composer for silent text, while providing phone/desktop uploads and application-owned image history. A public glasses endpoint has not been deployed. The owner has Display glasses and a Neural Band, but no Gemini key is available for live verification.
+Decision date: 2026-10-22. Implement a local web client and provider-independent Python backend. Target the documented Ray-Ban Display web composer for silent text, while providing phone/desktop uploads and application-owned image history.
 
 ## Candidate comparison
 
@@ -48,4 +48,4 @@ Local inference has no provider service charge and uses an installed model; see 
 - If Meta documents a web camera or supported native/web handoff, verify the exact runtime/version before changing the image workflow.
 - Before public or multiuser distribution, replace shared-owner authentication with a reviewed identity and per-user authorization model, complete hosting review, and satisfy the applicable Meta distribution requirements.
 
-Current device acceptance steps are in [hardware validation](../setup/hardware-validation.md). Test evidence belongs in the quality report; architectural feasibility is not a passed test.
+Current device acceptance steps are in [the deployment guide](../setup/deployment.md). Test evidence belongs in the quality report; architectural feasibility is not a passed test.

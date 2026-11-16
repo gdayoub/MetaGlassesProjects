@@ -1,27 +1,42 @@
-# HTTPS development access
+# HTTPS access for glasses and phones
 
-**Current session, 2026-10-22:** The owner manually started Cloudflare. https://session-acquired-elevation-intellectual.trycloudflare.com/ now serves the live app, with the exact hostname allowed locally. Public browser pairing and a real Ollama response passed. https://lensagent.vercel.app opens this URL using a lightweight launch page. Both laptop terminals must stay running. Historical automatic-execution rejection details below do not mean the current user-started tunnel is unavailable. Actual glasses testing remains pending.
+Meta Ray-Ban Display web apps need a public HTTPS origin. `127.0.0.1` on a
+phone or the glasses refers to that device, not the machine running Lensly.
+Lensly binds only to loopback and is exposed through a Cloudflare Tunnel, so
+no inbound firewall ports are opened.
 
-No external exposure has been performed. The owner explicitly approved a temporary HTTPS tunnel on 2026-10-22. Automatic approval review then rejected the command to download and start Cloudflare Tunnel with **"blocked by policy"**, without a more specific reason. The command did not run. This is a tool-execution blocker, not missing owner consent; do not ask the owner to approve the same action again. The local server remains bound to `127.0.0.1:8765`; the glasses cannot use that loopback address.
+## Development: quick tunnel
 
-The current [Cloudflare Quick Tunnel documentation](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/) describes temporary HTTPS URLs without an account or domain. It is a development option, with a changing hostname, no uptime guarantee, a 200 in-flight request limit and no SSE support. LensAgent currently uses ordinary HTTP requests. The separately offered email gate requires an interactive browser and has not been tested on glasses.
-
-The following is the documented manual setup for a developer in an environment where tunnel execution is permitted. The owner has already authorized this temporary exposure. Install `cloudflared` from its official distribution and run:
+[Cloudflare Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/)
+give a temporary HTTPS URL with no account or domain:
 
 ```powershell
 cloudflared tunnel --url http://127.0.0.1:8765
 ```
 
-This makes the service externally reachable. LensAgent's API still requires a token, while the static connection screen and health endpoint are public. The tunnel service terminates TLS and carries traffic; it is a separate privacy boundary.
-
-Before using the printed hostname, add **that exact hostname**, without scheme, to `.env`:
+Add the printed hostname (without scheme) to `.env`, then restart the backend:
 
 ```dotenv
-LENSAGENT_ALLOWED_HOSTS=127.0.0.1,localhost,exact-assigned-hostname.trycloudflare.com
+LENSAGENT_ALLOWED_HOSTS=127.0.0.1,localhost,<assigned-hostname>.trycloudflare.com
 ```
 
-Restart the single backend process. Preserve the Host header; trust forwarded HTTPS scheme headers only from the local tunnel/proxy. Uvicorn's local proxy handling must reflect `https` so the same-origin guard accepts browser requests. Verify unauthorized API calls return 401, wrong origins return403, HTTP does not carry credentials, and both pairing and image requests work through the real URL. Those checks remain unexecuted until a tunnel is authorized. Do not use wildcard hosts or disable the guard to work around a failed test.
+The hostname changes every time the tunnel restarts. Because browser storage
+is scoped per origin, each new hostname needs to be paired again.
 
-Install the HTTPS URL on glasses following [hardware validation](hardware-validation.md). Use a pairing code, never an access token in the URL or QR code. Stop the tunnel when testing finishes. Hostname changes require changing the allowed-host setting and glasses URL. Do not open Windows firewall ports for this tunnel.
+## Stable deployment: named tunnel
 
-A production release additionally needs an approved stable host, deployment security review, operational monitoring, privacy policy and relevant Meta distribution requirements. The current single-owner, single-process SQLite application is a local development foundation, not a public multitenant service. Docker, paid hosting, account creation and app publication were not required or performed.
+For a permanent address, create a **named Cloudflare Tunnel** that routes a
+fixed hostname on your own domain to `http://127.0.0.1:8765`. Run
+`cloudflared` and Ollama as services so they start with the machine, and set
+`LENSAGENT_ALLOWED_HOSTS` to that hostname.
+
+## Security checklist
+
+- The API always requires a bearer token. Only the static connection screen and `/health` are public.
+- Use exact hostnames in `LENSAGENT_ALLOWED_HOSTS`, never wildcards. Don't disable the host or origin guard.
+- Trust forwarded HTTPS headers only from the local tunnel. Uvicorn must see `https` so the same-origin check passes.
+- Pair devices with one-time codes. Never put an access token in a URL or QR code.
+- Verify after deploying: unauthenticated API calls return **401**, wrong origins return **403**, and pairing plus an image question both work through the public URL.
+
+Lensly is a single-owner, single-process application backed by SQLite. It is
+not designed to be a multi-tenant public service.

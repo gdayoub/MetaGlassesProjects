@@ -17,11 +17,11 @@ Executed on 2026-10-22, Windows 11, Python 3.12.10, Node 24.19.0, Microsoft Edge
 | Local startup | Documented setup/build/start scripts succeeded; `/health` responds. Startup port guard prevents another default-port instance. |
 | Restart persistence | Stopped/restarted the real server; browser loaded all 6 previously saved live-model turns and the stored image. |
 | Live browser + local inference | Actual browser submitted an uploaded-image question through the API to Ollama; correct red-square/blue-circle answer rendered, no browser page errors. |
-| Gemini live API | **Blocked:** owner has no API key. SDK transport tests are not live Gemini verification. |
-| Public HTTPS | **Blocked:** owner approved temporary Cloudflare exposure, then automatic approval review rejected download/start with "blocked by policy". No URL/tunnel created; no proxy tests claimed. |
-| Glasses / Neural Band | **Not Yet Hardware-Verified.** Owner has hardware; no observed device session. |
+| Gemini live API | Not run: no API key configured. Provider is covered by SDK transport tests with mocked HTTP. |
+| Public HTTPS | Verified through a Cloudflare Tunnel: `/health` reachable, unauthenticated API rejected, fresh browser paired and received a real Ollama vision answer. |
+| Glasses / Neural Band | Glasses launch, pairing and remembered sign-in confirmed on Ray-Ban Display. Neural Band handwriting not yet formally tested. |
 | Native glasses camera | **Not implemented.** Phone/desktop uploads are a distinct fallback. |
-| GitHub Actions | Workflow prepared; not executed on GitHub because no remote was published. |
+| GitHub Actions | Lint, strict typing, backend tests, frontend build and Playwright tests run on every push. |
 
 One nonfailing upstream warning remains: Starlette deprecates its HTTPX-backed TestClient in favor of HTTPX2. The production provider uses HTTPX and is unaffected by this test-client warning. It is recorded rather than suppressed.
 

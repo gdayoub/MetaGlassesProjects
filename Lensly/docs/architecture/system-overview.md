@@ -1,6 +1,6 @@
 # System overview
 
-LensAgent is a private text-and-image assistant with a web interface intended for small displays. The same interface can run on a desktop or phone. The owner has Meta Ray-Ban Display glasses and a Neural Band; using this build on those devices still requires an authorized HTTPS endpoint and device tests. No native camera connection is included.
+LensAgent is a private text-and-image assistant with a web interface intended for small displays. The same interface can run on a desktop or phone. Running it on Meta Ray-Ban Display glasses requires an HTTPS endpoint. No native camera connection is included.
 
 ```mermaid
 flowchart TD
@@ -56,4 +56,4 @@ There is no real-time synchronization. On a second device, refresh History and r
 | `storage.py` | SQLite transactions, retention, usage, deduplication and device pairing |
 | `apps/backend/tests` | Reproducible backend checks; see quality report for executed results |
 
-The API intentionally keeps model credentials server-side, rejects arbitrary remote image fetching, restricts Ollama to loopback, and uses one SQLite-backed owner workspace. External exposure requires a separate authorized deployment with valid HTTPS and correct proxy/host configuration. See [architecture decision](architecture-decision.md) and [hardware validation](../setup/hardware-validation.md).
+The API intentionally keeps model credentials server-side, rejects arbitrary remote image fetching, restricts Ollama to loopback, and uses one SQLite-backed owner workspace. External exposure requires a separate authorized deployment with valid HTTPS and correct proxy/host configuration. See [architecture decision](architecture-decision.md) and [hardware validation](../setup/deployment.md).
